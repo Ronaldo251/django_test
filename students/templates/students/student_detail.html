@@ -1,17 +1,53 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Student</title>
-    </head>
-<body>
-<h1>{{ student.first_name }} {{ student.last_name }}</h1>
-<p>Email: {{ student.email }}</p>
-<p>Enrollment date: {{ student.enrollment_date }}</p>
-<p>Active: {{ student.active }}</p>
-<p>
-    <a href="{% url 'students:edit' student.id %}">Edit</a> |
-    <a href="{% url 'students:list' %}">Back to list</a>
-</p>
-</body>
-</html>
+{% extends 'students/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h3 class="mb-0">Ficha do Aluno</h3>
+            </div>
+            <div class="card-body">
+                <h2 class="card-title">{{ student.first_name }} {{ student.last_name }}</h2>
+                <p class="card-text text-muted"><strong>Email:</strong> {{ student.email }}</p>
+
+                <hr>
+                
+                <h4>Cursos Matriculados:</h4>
+                
+                {% if student.enrollments.all %}
+                    <ul class="list-group mb-3">
+                    {% for enrollment in student.enrollments.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ enrollment.course.name }}</strong>
+                                <br>
+                                <small class="text-muted">Desde: {{ enrollment.enrollment_date|date:"d/m/Y" }}</small>
+                            </div>
+                            <div>
+                                {% if enrollment.active %}
+                                    <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                                
+                                {% if enrollment.is_free %}
+                                    <span class="badge bg-warning text-dark">Grátis</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">Este aluno não está matriculado em nenhum curso.</div>
+                {% endif %}
+
+                <div class="mt-4">
+                    <a href="{% url 'students:edit' student.id %}" class="btn btn-outline-secondary"> Editar Dados</a>
+                    <a href="{% url 'students:list' %}" class="btn btn-outline-secondary">Voltar para a Lista</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
